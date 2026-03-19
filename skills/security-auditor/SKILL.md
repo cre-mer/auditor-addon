@@ -59,11 +59,25 @@ All findings are hypotheses until mechanically verified. Never confirm a finding
 - Privileged roles (owner, admin, maintainers) are **honest and aligned**.
 - Later analysis will **discard** any finding that requires a privileged role to be malicious.
 
+**Category detection:**
+Identify which infrastructure category the codebase belongs to and load the matching trust-assumptions reference from `references/trust-assumptions/`:
+- `on-chain-protocols.md` — DeFi, DAOs, bridges, governance, oracles
+- `on-chain-libraries.md` — smart contract libraries, reusable base contracts
+- `network-infrastructure.md` — nodes, validators, sequencers, provers, DA layers
+- `zk-and-cryptography.md` — circuits, curves, signatures, proving systems
+- `developer-tooling.md` — compilers, SDKs, CLIs, client libraries
+- `wallet-and-signer.md` — wallets, MPC signers, AA bundlers
+
+If no existing file matches the codebase's category, generate one following the same format (domain calibration, trust assumptions, severity calibration, common false positives) and present it to the user for confirmation before proceeding.
+
+Keep the loaded reference in context for use during PROBE.
+
 **Steps:**
 1. Run `call_chains` on all in-scope files. Batch parallel runs if multiple files.
 2. Read imported files, base classes, and libraries that paths reference. Batch independent reads.
 3. Quick repo scan for relevant documentation (README, docs/, specs/). Only load if directly relevant.
-4. Produce the output below.
+4. Detect the codebase category and load (or generate) the trust-assumptions reference.
+5. Produce the output below.
 
 **Output** — four sections, concise:
 
@@ -124,7 +138,7 @@ List standards implemented or depended on. Classify as **Core** or **Peripheral*
 **Goal:** Systematically analyze every execution path for real, exploitable vulnerabilities.
 
 **Threat Model:**
-- Privileged roles are honest.
+- Privileged roles are honest but fallible — they may send malformatted data, use wrong parameters, or make operational mistakes.
 - Focus on unprivileged/external actors or bad interactions with honest admins.
 
 **Instructions:**
